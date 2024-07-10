@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1",
+	"FriendlyName": "BP_Multithreading",
+	"Description": "",
+	"Category": "Multithreading",
+	"CreatedBy": "Andrii Loborchuk",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "BP_Multithreading",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
