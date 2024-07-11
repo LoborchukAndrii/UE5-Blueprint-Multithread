@@ -26,7 +26,6 @@ public class BP_Multithreading : ModuleRules
 			new string[]
 			{
 				"Core",
-				"BlueprintGraph",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
