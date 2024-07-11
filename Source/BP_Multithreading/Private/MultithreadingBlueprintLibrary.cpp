@@ -24,6 +24,27 @@ void UMultithreadingBlueprintLibrary::EnableActorMultiThreadTick(AActor* TargetA
 	TargetActor->PrimaryActorTick.bRunOnAnyThread = true;
 }
 
+void UMultithreadingBlueprintLibrary::RunTask_OnBackgroundThread(FFunctionThreadLogic BackGroundThreadLogic, FFunctionThreadLogic GameThreadLogic)
+{
+	AsyncTask(ENamedThreads::AnyThread, [BackGroundThreadLogic, GameThreadLogic]()
+	{
+		BackGroundThreadLogic.Execute();
+		
+		AsyncTask(ENamedThreads::GameThread, [GameThreadLogic]()
+		{
+			GameThreadLogic.Execute();
+		});
+	});
+}
+
+void UMultithreadingBlueprintLibrary::RunTask_OnGameThread(FFunctionThreadLogic GameThreadLogic)
+{
+	AsyncTask(ENamedThreads::GameThread, [GameThreadLogic]()
+		{
+			GameThreadLogic.Execute();
+		});
+}
+
 void UAsyncThread::Activate()
 {
 	Super::Activate();

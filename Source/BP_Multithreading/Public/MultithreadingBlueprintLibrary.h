@@ -9,6 +9,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogThread, Log, All);
 
+DECLARE_DYNAMIC_DELEGATE(FFunctionThreadLogic);
 /**
  * 
  */
@@ -17,15 +18,20 @@ class BP_MULTITHREADING_API UMultithreadingBlueprintLibrary : public UBlueprintF
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, Category = "Threaded")
+	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly), Category = "Threaded")
 	static void SleepThread(float SleepTime);
 
-	UFUNCTION(BlueprintCallable, Category = "Threaded")
+	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly), Category = "Threaded")
 	static void GetThread();
 
 	UFUNCTION(BlueprintCallable, Category = "Threaded")
 	static void EnableActorMultiThreadTick(AActor* TargetActor);
 
+	UFUNCTION(BlueprintCallable, Category = "Threaded")
+	static void RunTask_OnBackgroundThread(FFunctionThreadLogic BackGroundThreadLogic, FFunctionThreadLogic GameThreadLogic);
+
+	UFUNCTION(BlueprintCallable, Category = "Threaded")
+	static void RunTask_OnGameThread(FFunctionThreadLogic GameThreadLogic);
 	
 };
 
