@@ -25,8 +25,7 @@ public class BP_Multithreading : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"BlueprintGraph",
+				"Core"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
