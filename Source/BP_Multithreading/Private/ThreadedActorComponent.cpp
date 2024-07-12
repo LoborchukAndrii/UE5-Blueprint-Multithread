@@ -12,6 +12,19 @@ UThreadedActorComponent::UThreadedActorComponent()
 }
 
 
+bool UThreadedActorComponent::RemoveAtomic(FName Identifier)
+{
+	//Already doesn't exist?
+	if (!AtomicMap.Contains(Identifier)) return false;
+
+		
+	delete AtomicMap[Identifier];
+	AtomicMap.Remove(Identifier);
+	AtomicMapTypes.Remove(Identifier);
+			
+	return true;
+}
+
 void UThreadedActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -40,3 +53,44 @@ void UThreadedActorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	ThreadLogic->TickEvent->Trigger();
 }
 
+template <typename Type>
+void UThreadedActorComponent::SetAtomic(FName Identifier, Type Value)
+{
+	FString CurrentTypeName = typeid(Type).name();
+		
+	//Identifier exists?
+	if (AtomicMap.Contains(Identifier))
+	{
+		//Update identifier
+		AtomicMap[Identifier]->store(Value);
+		AtomicMapTypes[Identifier] = CurrentTypeName;
+
+		return;
+	}
+
+
+	//Can only reach here if owner or identifier didn't exist
+	AtomicMap.Add(Identifier, new std::atomic(std::variant<VariableTypes>(Value)));
+	AtomicMapTypes.Add(Identifier, CurrentTypeName);
+}
+
+template <typename Type>
+bool UThreadedActorComponent::GetAtomic(FName Identifier, Type& Value)
+{
+	//Doesn't exist? Exit
+	if (!AtomicMap.Contains(Identifier)) return false;
+
+		
+	//Different type?
+	FString PassedType = typeid(Type).name();
+	if (AtomicMapTypes[Identifier] != PassedType)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 20, FColor::Red,FString::Printf(TEXT
+											 ("Tried to access atomic \"%ls\" with type \"%ls\" when it's defined as \"%ls\""),
+												 *Identifier.ToString(),  *PassedType, *AtomicMapTypes[Identifier]));
+		return false;
+	}
+			
+	Value = std::get<Type>(AtomicMap[Identifier]->load());
+	return true;
+}
