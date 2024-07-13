@@ -44,6 +44,15 @@ void UThreadedActorComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	ThreadLogic->TickEvent->Trigger();
 	Thread->Kill();
 	delete ThreadLogic;
+
+	// We need to delete this data to clear the memory because the component has completed its lifecycle.
+	// This deletion is necessary because we created it with new.
+	TArray<FName> Keys;
+	AtomicMap.GetKeys(Keys);
+	for (auto Key : Keys)
+	{
+		delete AtomicMap[Key];
+	}
 }
 
 void UThreadedActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
