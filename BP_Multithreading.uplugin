@@ -8,12 +8,14 @@
 	"CreatedBy": "Andrii Loborchuk",
 	"CreatedByURL": "",
 	"DocsURL": "",
-	"MarketplaceURL": "",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/4b8271b121e3468fac1c6b2b72dc0c8a",
 	"SupportURL": "",
 	"CanContainContent": true,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
+	"EngineVersion": "5.3",
+	"PlatformAllowList": [ "Win64", "Win32", "Mac", "IOS", "Android" ],
 	"Modules": [
 		{
 			"Name": "BP_Multithreading",

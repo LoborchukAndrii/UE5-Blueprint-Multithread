@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Andrii Loborchuk. All Rights Reserved. (2024)
 
 
 #include "ThreadedActorComponent.h"

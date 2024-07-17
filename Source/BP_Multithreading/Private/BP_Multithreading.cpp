@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Andrii Loborchuk. All Rights Reserved. (2024)
 
 #include "BP_Multithreading.h"
 
