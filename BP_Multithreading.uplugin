@@ -14,7 +14,7 @@
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
-	"EngineVersion": "5.3",
+	"EngineVersion": "5.4",
 	"PlatformAllowList": [ "Win64", "Win32", "Mac", "IOS", "Android" ],
 	"Modules": [
 		{
