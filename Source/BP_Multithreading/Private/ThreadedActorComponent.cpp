@@ -3,6 +3,10 @@
 
 #include "ThreadedActorComponent.h"
 #include "ActorComponentThread.h"
+#include "HAL/RunnableThread.h"
+#include "GameFramework/Actor.h"
+#include "HAL/Runnable.h"
+#include "typeinfo"
 
 UThreadedActorComponent::UThreadedActorComponent()
 {
@@ -94,9 +98,8 @@ bool UThreadedActorComponent::GetAtomic(FName Identifier, Type& Value)
 	FString PassedType = typeid(Type).name();
 	if (AtomicMapTypes[Identifier] != PassedType)
 	{
-		GEngine->AddOnScreenDebugMessage(0, 20, FColor::Red,FString::Printf(TEXT
-											 ("Tried to access atomic \"%ls\" with type \"%ls\" when it's defined as \"%ls\""),
-												 *Identifier.ToString(),  *PassedType, *AtomicMapTypes[Identifier]));
+		UE_LOG(LogTemp, Warning, TEXT("Tried to access atomic \"%ls\" with type \"%ls\" when it's defined as \"%ls\""),
+												 *Identifier.ToString(),  *PassedType, *AtomicMapTypes[Identifier]);
 		return false;
 	}
 			
