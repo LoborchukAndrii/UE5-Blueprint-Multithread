@@ -3,6 +3,8 @@
 
 #include "MultithreadingBlueprintLibrary.h"
 #include "HAL/ThreadManager.h"
+#include "Async/Async.h"
+#include "GameFramework/Actor.h"
 
 DEFINE_LOG_CATEGORY(LogThread);
 
@@ -15,7 +17,6 @@ void UMultithreadingBlueprintLibrary::GetThread()
 {
 	uint32 ThreadId = FPlatformTLS::GetCurrentThreadId();
 	FString ThreadName = FThreadManager::Get().GetThreadName(ThreadId);
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, ThreadName, true);
 	UE_LOG(LogThread, Warning, TEXT("%s"), *ThreadName)
 }
 

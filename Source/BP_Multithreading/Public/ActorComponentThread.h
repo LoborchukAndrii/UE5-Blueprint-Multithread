@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "HAL/Runnable.h"
 
 class UThreadedActorComponent;
+class FEvent;
 
 class FActorComponentThread : public FRunnable {
 public:

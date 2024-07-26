@@ -3,6 +3,7 @@
 #pragma once
 
 #include <variant>
+#include <atomic>
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
@@ -10,6 +11,7 @@
 
 
 class FActorComponentThread;
+class FRunnableThread;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnotherThreadTickDelegate);
 

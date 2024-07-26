@@ -2,7 +2,9 @@
 
 
 #include "ActorComponentThread.h"
-
+#include "Windows/WindowsPlatformProcess.h"
+#include "GenericPlatform/GenericPlatformProcess.h"
+#include "HAL/Event.h"
 #include "ThreadedActorComponent.h"
 
 FActorComponentThread::FActorComponentThread(UThreadedActorComponent* AttachedObject) {
