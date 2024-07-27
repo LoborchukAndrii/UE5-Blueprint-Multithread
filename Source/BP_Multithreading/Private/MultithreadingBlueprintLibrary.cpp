@@ -46,6 +46,36 @@ void UMultithreadingBlueprintLibrary::RunTask_OnGameThread(FFunctionThreadLogic 
 		});
 }
 
+void UMultithreadingBlueprintLibrary::Run_ParallelFor(FParallelForLogic ParallelForLogic, int LoopAmount, EParallelFlags ParallelType)
+{
+	EParallelForFlags ParallelFlag = EParallelForFlags::None;
+	switch (ParallelType)
+	{
+		case None:
+			ParallelFlag = EParallelForFlags::None;
+			break;
+		case ForceSingleThread:
+			ParallelFlag = EParallelForFlags::ForceSingleThread;
+			break;
+		case Unbalanced:
+			ParallelFlag = EParallelForFlags::Unbalanced;
+			break;
+		case PumpRenderingThread:
+			ParallelFlag = EParallelForFlags::PumpRenderingThread;
+			break;
+		case BackgroundPriority:
+			ParallelFlag = EParallelForFlags::BackgroundPriority;
+			break;
+		default:
+			;
+	}
+	ParallelFor(LoopAmount, [&ParallelForLogic](int Index)
+	{
+		FParallelForLogic LocalDelegate = ParallelForLogic;
+		LocalDelegate.Execute(Index);
+	}, ParallelFlag);
+}
+
 void UAsyncThread::Activate()
 {
 	Super::Activate();
