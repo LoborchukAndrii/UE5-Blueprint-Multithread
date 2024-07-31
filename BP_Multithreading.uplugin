@@ -15,7 +15,7 @@
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"EngineVersion": "5.4",
-	"PlatformAllowList": [ "Win64", "Win32", "Mac", "IOS", "Android" ],
+	"PlatformAllowList": [ "Win64", "Win32"],
 	"Modules": [
 		{
 			"Name": "BP_Multithreading",

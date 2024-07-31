@@ -7,6 +7,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "UObject/UnrealTypePrivate.h"
 #include "ThreadedActorComponent.generated.h"
 
 
@@ -46,6 +47,11 @@ public:
 	UFUNCTION(BlueprintPure, Category="Atomics|Get")
 	bool GetAtomicBool(FName Identifier, bool& Value) {return GetAtomic(Identifier, Value);}
 
+	UFUNCTION(BlueprintCallable, meta=(DisplayName = "SetAtomic", CustomStructureParam = "Item"), Category = "Atomics|Set")
+	void SetAtomicVariable(FName Identifier, UProperty* Item) { SetAtomic(Identifier, Item);}
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "GetAtomic", CustomStructureParam = "Item"), Category = "Atomics|Get")
+	bool GetAtomicVariable(FName Identifier, UProperty*& Item) { return GetAtomic(Identifier, Item);};
+	
 	UFUNCTION(BlueprintCallable, Category="Atomics|Remove")
 	bool RemoveAtomic(FName Identifier);
 #pragma endregion
@@ -59,7 +65,7 @@ private:
     FRunnableThread* Thread;
 
 #pragma region Atomic
-	#define VariableTypes int, float, bool
+	#define VariableTypes int, float, bool, UProperty*
 	TMap<FName, std::atomic<std::variant<VariableTypes>>*> AtomicMap;
 	TMap<FName, FString> AtomicMapTypes;
 
