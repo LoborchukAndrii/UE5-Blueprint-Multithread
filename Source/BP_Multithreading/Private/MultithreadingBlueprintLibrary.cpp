@@ -5,6 +5,7 @@
 #include "HAL/ThreadManager.h"
 #include "Async/Async.h"
 #include "GameFramework/Actor.h"
+#include "Async/ParallelFor.h"
 
 DEFINE_LOG_CATEGORY(LogThread);
 
