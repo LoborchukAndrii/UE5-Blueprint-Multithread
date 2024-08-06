@@ -2,11 +2,8 @@
 
 
 #include "ThreadPoolContainer.h"
-
-void UPoolQueueWork::EndWork_Implementation()
-{
-	MarkAsGarbage();
-}
+#include "Async/Async.h"
+#include "Engine/Engine.h"
 
 void UPoolQueueWork::DoThreadedWork()
 {

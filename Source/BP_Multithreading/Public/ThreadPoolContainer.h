@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Misc/IQueuedWork.h"
+#include "Misc/QueuedThreadPool.h"
 #include "ThreadPoolContainer.generated.h"
 
 UENUM(BlueprintType)
@@ -40,15 +42,6 @@ public:
 	*/
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPostWork();
-
-	/**
-	 * Tells the queued work that it is being abandoned so that it can do
-	 * per object clean up as needed. This will only be called if it is being
-	 * abandoned before completion. NOTE: This requires the object to delete
-	 * itself using whatever heap it was allocated in.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void EndWork();
 };
 
 UCLASS(BlueprintType)
