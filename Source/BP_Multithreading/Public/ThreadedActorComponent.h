@@ -31,31 +31,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Threaded")
 	FOnAnotherThreadTickDelegate OnAnotherThreadTick;
 
-#pragma region Atomic
-	UFUNCTION(BlueprintCallable, Category="Atomics|Set")
-	void SetAtomicInteger(FName Identifier, int Value) {SetAtomic(Identifier, Value);}
-	UFUNCTION(BlueprintPure, Category="Atomics|Get")
-	bool GetAtomicInteger(FName Identifier, int& Value) {return GetAtomic(Identifier, Value);}
-
-	UFUNCTION(BlueprintCallable, Category="Atomics|Set")
-	void SetAtomicFloat(FName Identifier, float Value) {SetAtomic(Identifier, Value);}
-	UFUNCTION(BlueprintPure, Category="Atomics|Get")
-	bool GetAtomicFloat(FName Identifier, float& Value) {return GetAtomic(Identifier, Value);}
-
-	UFUNCTION(BlueprintCallable, Category="Atomics|Set")
-	void SetAtomicBool(FName Identifier, bool Value) {SetAtomic(Identifier, Value);}
-	UFUNCTION(BlueprintPure, Category="Atomics|Get")
-	bool GetAtomicBool(FName Identifier, bool& Value) {return GetAtomic(Identifier, Value);}
-
-	UFUNCTION(BlueprintCallable, meta=(DisplayName = "SetAtomic", CustomStructureParam = "Item"), Category = "Atomics|Set")
-	void SetAtomicVariable(FName Identifier, UProperty* Item) { SetAtomic(Identifier, Item);}
-	UFUNCTION(BlueprintPure, meta=(DisplayName = "GetAtomic", CustomStructureParam = "Item"), Category = "Atomics|Get")
-	bool GetAtomicVariable(FName Identifier, UProperty*& Item) { return GetAtomic(Identifier, Item);};
-	
-	UFUNCTION(BlueprintCallable, Category="Atomics|Remove")
-	bool RemoveAtomic(FName Identifier);
-#pragma endregion
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -63,17 +38,5 @@ private:
 	FActorComponentThread* ThreadLogic;
 
     FRunnableThread* Thread;
-
-#pragma region Atomic
-	#define VariableTypes int, float, bool, UProperty*
-	TMap<FName, std::atomic<std::variant<VariableTypes>>*> AtomicMap;
-	TMap<FName, FString> AtomicMapTypes;
-
-	template <typename Type>
-	void SetAtomic(FName Identifier, Type Value);
-
-	template <typename Type>
-	bool GetAtomic(FName Identifier, Type& Value);
-#pragma endregion
 
 };
