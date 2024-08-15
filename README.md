@@ -25,15 +25,6 @@ Implementation of Parallel For has been added, which will allow you to perform c
 
 ![image](https://github.com/user-attachments/assets/ee7608c4-7caa-4260-96c1-cb93ca2a1309)
 
-### New Set/Get atomics
-
-New nodes have been created that allow you to create absolutely any atomics variables. They automatically pull up the variable type when you connect it.
-
-![image](https://github.com/user-attachments/assets/7a4ebf05-2e90-45b4-82e4-3c9aa681c4f1)
-![image](https://github.com/user-attachments/assets/c6099670-f3a4-418b-bb4e-6a236d063acc)
-![image](https://github.com/user-attachments/assets/2c8463b5-8abb-41f3-af03-0c5d68d93912)
-![image](https://github.com/user-attachments/assets/a7840a10-195a-4f4b-9c67-d568b254520a)
-
 ## Class
 ### Threaded actor component
 
@@ -44,6 +35,16 @@ On Begin, play creates its own thread that does not affect the game thread in an
 ![image](https://github.com/user-attachments/assets/92a2c0ed-36e7-4e53-9ecb-ba252a023849)
 ![image](https://github.com/user-attachments/assets/ce67c40c-c3f9-49c5-946b-7dc771f0dd25)
 
-It also contains a container with Atomic variables for safe data modification.
+### Atomic container
 
-![image](https://github.com/user-attachments/assets/f5d49535-8e48-4847-aa7c-4435a35fbb85)
+New nodes have been created that allow you to create absolutely any atomics variables. They automatically pull up the variable type when you connect it.
+It also has Queue, a thread safe linked list.
+
+![image](https://github.com/user-attachments/assets/0f38f2d3-884f-48fa-a7ba-8cd44b56b117)
+
+### Thread pool
+
+allows you to create a pool of a certain number of threads, and then add tasks that will be executed on these threads depending on their load.
+
+![image](https://github.com/user-attachments/assets/d734b799-0b4a-4b5e-852f-ad9c0e243406)
+
