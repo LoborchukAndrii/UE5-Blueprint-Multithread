@@ -41,10 +41,10 @@ class BP_MULTITHREADING_API UMultithreadingBlueprintLibrary : public UBlueprintF
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly), Category = "Threaded")
+	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly, BlueprintThreadSafe), Category = "Threaded")
 	static void SleepThread(float SleepTime);
 
-	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly), Category = "Threaded")
+	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly, BlueprintThreadSafe), Category = "Threaded")
 	static void GetThread();
 
 	UFUNCTION(BlueprintCallable, Category = "Threaded")
@@ -77,7 +77,7 @@ public:
 	
 	virtual void Activate() override;
 
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"), Category = "Threaded")
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
 	static UAsyncThread* Threaded_Logic(const UObject* WorldContextObject);
 
 	
@@ -98,7 +98,7 @@ public:
 	
 	virtual void Activate() override;
 
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"), Category = "Threaded")
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
 	static UAsyncGameThread* GameThread_Logic(const UObject* WorldContextObject);
 
 	

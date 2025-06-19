@@ -14,8 +14,9 @@
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
-	"EngineVersion": "5.4",
-	"PlatformAllowList": [ "Win64", "Win32"],
+	"EngineVersion": "5.6",
+	"PlatformAllowList": [ "Win64"],
+	"PlatformDenyList": ["Mac", "IOS", "Android", "Linux"],
 	"Modules": [
 		{
 			"Name": "BP_Multithreading",

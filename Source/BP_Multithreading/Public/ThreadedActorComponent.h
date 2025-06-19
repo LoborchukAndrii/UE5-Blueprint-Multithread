@@ -16,7 +16,7 @@ class FRunnableThread;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnotherThreadTickDelegate);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable )
 class BP_MULTITHREADING_API UThreadedActorComponent : public UActorComponent
 {
 	GENERATED_BODY()

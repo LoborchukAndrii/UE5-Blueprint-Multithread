@@ -2,6 +2,7 @@
 
 
 #include "AtomicContainer.h"
+#include "UObject/UnrealTypePrivate.h"
 
 bool UAtomicContainer::RemoveAtomic(FName Identifier)
 {
@@ -29,16 +30,19 @@ void UAtomicContainer::SetAtomic(FName Identifier, UProperty* Value)
 
 void UAtomicContainer::AddQueue(FName Identifier, UProperty* Value)
 {
-	if (QueueMap.Contains(Identifier))
+	if (Value != nullptr)
 	{
-		QueueMap[Identifier]->Enqueue(Value);
-		return;
-	}
+		if (QueueMap.Contains(Identifier))
+		{
+			QueueMap[Identifier]->Enqueue(Value);
+			return;
+		}
 
-	TQueue<UProperty*>* NewQueue = new TQueue<UProperty*>();
-	NewQueue->Enqueue(Value);
-	
-	QueueMap.Add(Identifier, NewQueue);
+		TQueue<UProperty*>* NewQueue = new TQueue<UProperty*>();
+		NewQueue->Enqueue(Value);
+
+		QueueMap.Add(Identifier, NewQueue);
+	}
 }
 
 bool UAtomicContainer::GetQueue(FName Identifier, UProperty*& Value)
