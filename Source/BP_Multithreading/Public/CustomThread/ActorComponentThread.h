@@ -1,4 +1,4 @@
-// Copyright Andrii Loborchuk. All Rights Reserved. (2024)
+// Copyright Andrii Loborchuk. All Rights Reserved. (2025)
 
 #pragma once
 

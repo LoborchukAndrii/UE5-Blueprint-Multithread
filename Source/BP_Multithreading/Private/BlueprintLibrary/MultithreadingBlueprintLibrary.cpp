@@ -6,6 +6,7 @@
 #include "Async/Async.h"
 #include "GameFramework/Actor.h"
 #include "Async/ParallelFor.h"
+#include "WorldSubsystem/ThreadsContainerSubsystem.h"
 
 DEFINE_LOG_CATEGORY(LogThread);
 
@@ -93,10 +94,53 @@ void UAsyncThread::Activate()
 	});
 }
 
-UAsyncThread* UAsyncThread::Threaded_Logic(const UObject* WorldContextObject)
+UAsyncThread* UAsyncThread::RunTask_OnBackgroundThread_Latent(const UObject* WorldContextObject)
 {
 	UAsyncThread* BlueprintNode = NewObject<UAsyncThread>();
 	BlueprintNode->WorldContextObject = const_cast<UObject*>(WorldContextObject);
+	return BlueprintNode;
+}
+
+void UScopedMutexLock::Activate()
+{
+	Super::Activate();
+
+	if (WorldContextObject->GetWorld())
+	{
+		if (UThreadsContainerSubsystem* TCS = WorldContextObject->GetWorld()->GetSubsystem<UThreadsContainerSubsystem>())
+		{
+			if (MutexToUse == EMutexType::CriticalSection)
+			{
+				auto Mutex = TCS->GetCriticalSectionByName(MutexIdentifier);
+				if (Mutex)
+				{
+					FScopeLock Lock(Mutex);
+			
+					LockedMutex.Broadcast();
+				}
+			}
+			else
+			{
+				auto Mutex = TCS->GetSpinLockByName(MutexIdentifier);
+				if (Mutex)
+				{
+					Mutex->Lock();
+			
+					LockedMutex.Broadcast();
+					
+					Mutex->Unlock();
+				}
+			}
+		}
+	}
+}
+
+UScopedMutexLock* UScopedMutexLock::RunLogicWithLockedMutex(UObject* WorldContextObject, FName NewMutexIdentifier, EMutexType NewMutexToUse)
+{
+	UScopedMutexLock* BlueprintNode = NewObject<UScopedMutexLock>();
+	BlueprintNode->WorldContextObject = WorldContextObject;
+	BlueprintNode->MutexIdentifier = NewMutexIdentifier;
+	BlueprintNode->MutexToUse = NewMutexToUse;
 	return BlueprintNode;
 }
 
@@ -111,7 +155,7 @@ void UAsyncGameThread::Activate()
 		});
 }
 
-UAsyncGameThread* UAsyncGameThread::GameThread_Logic(const UObject* WorldContextObject)
+UAsyncGameThread* UAsyncGameThread::RunTask_OnGameThread_Latent(const UObject* WorldContextObject)
 {
 	UAsyncGameThread* BlueprintNode = NewObject<UAsyncGameThread>();
 	BlueprintNode->WorldContextObject = const_cast<UObject*>(WorldContextObject);

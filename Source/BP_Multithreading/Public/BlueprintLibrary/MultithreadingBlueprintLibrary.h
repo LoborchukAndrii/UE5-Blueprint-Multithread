@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/MutexType.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "MultithreadingBlueprintLibrary.generated.h"
@@ -78,7 +79,31 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
-	static UAsyncThread* Threaded_Logic(const UObject* WorldContextObject);
+	static UAsyncThread* RunTask_OnBackgroundThread_Latent(const UObject* WorldContextObject);
+
+	
+private:
+	UPROPERTY()
+	UObject* WorldContextObject;
+};
+
+UCLASS()
+class BP_MULTITHREADING_API UScopedMutexLock : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FThreadLogic LockedMutex;
+
+	FName MutexIdentifier;
+
+	EMutexType MutexToUse;
+	
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
+	static UScopedMutexLock* RunLogicWithLockedMutex(UObject* WorldContextObject, FName NewMutexIdentifier, EMutexType NewMutexToUse);
 
 	
 private:
@@ -99,7 +124,7 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
-	static UAsyncGameThread* GameThread_Logic(const UObject* WorldContextObject);
+	static UAsyncGameThread* RunTask_OnGameThread_Latent(const UObject* WorldContextObject);
 
 	
 private:
