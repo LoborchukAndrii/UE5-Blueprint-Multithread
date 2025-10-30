@@ -180,7 +180,7 @@ void UBackgroundTaskNode::Activate()
 {
 	Super::Activate();
 
-	AsyncTask(ENamedThreads::BackgroundThreadPriority, [this]()
+	AsyncTask(ENamedThreads::AnyThread, [this]()
 	{
 		OnBackgroundThread.Broadcast();
 		SetReadyToDestroy();

@@ -123,6 +123,30 @@ void UThreadsContainerSubsystem::UnlockCriticalSection(FName Identifier, EMutexT
 	}
 }
 
+void UThreadsContainerSubsystem::WaitTriggerEvent(FName Identifier)
+{
+	if (auto EventPtr = EventMap.Find(Identifier))
+	{
+		(*EventPtr)->Wait();
+	}
+	else
+	{
+		FEvent* Event = FGenericPlatformProcess::GetSynchEventFromPool(false);
+
+		EventMap.Add(Identifier, Event);
+
+		Event->Wait();
+	}
+}
+
+void UThreadsContainerSubsystem::TriggerEvent(FName Identifier)
+{
+	if (auto EventPtr = EventMap.Find(Identifier))
+	{
+		(*EventPtr)->Trigger();
+	}
+}
+
 FCriticalSection* UThreadsContainerSubsystem::GetCriticalSectionByName(FName Identifier)
 {
 	if (auto Mutex = CriticalSectionMap.Find(Identifier))
@@ -177,14 +201,20 @@ void UThreadsContainerSubsystem::BeginDestroy()
 
 	TArray<FName> Keys;
 	AtomicMap.GetKeys(Keys);
-	for (auto Key : Keys)
+	for (auto& Key : Keys)
 	{
 		delete AtomicMap[Key];
 	}
 	
 	QueueMap.GetKeys(Keys);
-	for (auto Key : Keys)
+	for (auto& Key : Keys)
 	{
 		delete QueueMap[Key];
+	}
+
+	EventMap.GetKeys(Keys);
+	for (auto& Key : Keys)
+	{
+		FGenericPlatformProcess::ReturnSynchEventToPool(EventMap[Key]);
 	}
 }

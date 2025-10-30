@@ -50,6 +50,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mutex")
 	void UnlockCriticalSection(FName Identifier, EMutexType MutexType);
 
+	UFUNCTION(BlueprintCallable, Category = "Mutex")
+	void WaitTriggerEvent(FName Identifier);
+
+	UFUNCTION(BlueprintCallable, Category = "Mutex")
+	void TriggerEvent(FName Identifier);
+
 	FCriticalSection* GetCriticalSectionByName(FName Identifier);
 	UE::FSpinLock* GetSpinLockByName(FName Identifier);
 #pragma endregion
@@ -60,6 +66,7 @@ public:
 private:
 	TMap<FName, TSharedPtr<FCriticalSection>> CriticalSectionMap;
 	TMap<FName, TSharedPtr<UE::FSpinLock>> SpinLockMap;
+	TMap<FName, FEvent*> EventMap;
 	
 	TMap<FName, std::atomic<UProperty*>*> AtomicMap;
 	TMap<FName, TQueue<UProperty*>*> QueueMap;
