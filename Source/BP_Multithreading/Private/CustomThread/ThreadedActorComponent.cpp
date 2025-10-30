@@ -1,18 +1,17 @@
 // Copyright Andrii Loborchuk. All Rights Reserved. (2024)
 
 
-#include "ThreadedActorComponent.h"
-#include "ActorComponentThread.h"
+#include "CustomThread/ThreadedActorComponent.h"
+#include "CustomThread/ActorComponentThread.h"
 #include "HAL/RunnableThread.h"
 #include "GameFramework/Actor.h"
 #include "HAL/Runnable.h"
 #include "typeinfo"
 
-UThreadedActorComponent::UThreadedActorComponent()
+UThreadedActorComponent::UThreadedActorComponent(): ThreadLogic(nullptr), Thread(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bRunOnAnyThread = true;
-
 }
 
 void UThreadedActorComponent::BeginPlay()

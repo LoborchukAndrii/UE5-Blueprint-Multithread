@@ -42,22 +42,77 @@ class BP_MULTITHREADING_API UMultithreadingBlueprintLibrary : public UBlueprintF
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly, BlueprintThreadSafe), Category = "Threaded")
+	/**
+	 * This function used only for testing is your code has impact to game thread and create some stutters.
+	 * 
+	 * @param SleepTime - The time during which the thread will be asleep.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly, BlueprintThreadSafe), Category = "Multi-Threading | Debug")
 	static void SleepThread(float SleepTime);
 
-	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly, BlueprintThreadSafe), Category = "Threaded")
-	static void GetThread();
+	/**
+	 * Debug function to check on which thread code was executed.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(DevelopmentOnly, BlueprintThreadSafe), Category = "Multi-Threading | Debug")
+	static void LogThreadName();
 
-	UFUNCTION(BlueprintCallable, Category = "Threaded")
-	static void EnableActorMultiThreadTick(AActor* TargetActor);
+	/**
+	 * Gives actor posibility to run tick on any thread. Can be enabled or disabled.
+	 * 
+	 * @param TargetActor - Actor which you want to give ability run on any thread
+	 * @param Enable - enable or disable run tick on any thread
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Multi-Threading")
+	static void EnableActorMultiThreadTick(AActor* TargetActor, bool Enable);
 
-	UFUNCTION(BlueprintCallable, Category = "Threaded")
-	static void RunTask_OnBackgroundThread(FFunctionThreadLogic BackGroundThreadLogic, FFunctionThreadLogic GameThreadLogic);
+	/**
+	 * Gives actor component posibility to run tick on any thread. Can be enabled or disabled.
+	 * 
+	 * @param TargetActorComponent - Actor Component which you want to give ability run on any thread
+	 * @param Enable - enable or disable run tick on any thread
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Multi-Threading")
+	static void EnableActorComponentMultiThreadTick(UActorComponent* TargetActorComponent, bool Enable);
 
-	UFUNCTION(BlueprintCallable, Category = "Threaded")
+	/**
+	 *	This node execute one function on background thread after which another one function will be executed on game thread.
+	 * 
+	 * @param BackGroundThreadLogic - Function which will be executed on background thread
+	 * @param GameThreadLogic - Function which will be executed on game thread after background thread task done
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Multi-Threading")
+	static void RunTask_OnBackgroundThreadCallback(FFunctionThreadLogic BackGroundThreadLogic, FFunctionThreadLogic GameThreadLogic);
+
+	/**
+	 * This node execute one function on background thread.
+	 * 
+	 * @param BackGroundThreadLogic - Function which will be executed on background thread
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Multi-Threading")
+	static void RunTask_OnBackgroundThread(FFunctionThreadLogic BackGroundThreadLogic);
+
+	/**
+	 * This node execute one function on game thread.
+	 * 
+	 * @param GameThreadLogic - Function which will be executed on game thread
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Multi-Threading")
 	static void RunTask_OnGameThread(FFunctionThreadLogic GameThreadLogic);
 
-	UFUNCTION(BlueprintCallable, Category = "Threaded")
+	/**
+	 * Run one function on multiple threads (function will have it loop index).
+	 *
+	 * WARNING!!!
+	 * Don't use with events, use only with function. Usage with event will cause undefined behavior, crash, bugs.
+	 *
+	 * Loop code also will be executed on thread which call it (next Caller). If Caller is Game thread then Game thread
+	 * will wait until all loops done (so can cause stutters). Better call it on background thread.
+	 * 
+	 * @param ParallelForLogic - Function which will be executed on many threads
+	 * @param LoopAmount - amount of loops
+	 * @param ParallelType - which parallel type to use
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Multi-Threading")
 	static void Run_ParallelFor(FParallelForLogic ParallelForLogic, int LoopAmount, EParallelFlags ParallelType = BackgroundPriority);
 	
 };
@@ -65,7 +120,7 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FThreadLogic);
 
 UCLASS()
-class BP_MULTITHREADING_API UAsyncThread : public UBlueprintAsyncActionBase
+class BP_MULTITHREADING_API UBackgroundTaskCallbackNode : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
@@ -77,9 +132,9 @@ public:
 	FThreadLogic OnGameThread;
 	
 	virtual void Activate() override;
-
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
-	static UAsyncThread* RunTask_OnBackgroundThread_Latent(const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Multi-Threading | Latent")
+	static UBackgroundTaskCallbackNode* RunTask_OnBackgroundThreadCallback_Latent(UObject* WorldContextObject);
 
 	
 private:
@@ -88,7 +143,7 @@ private:
 };
 
 UCLASS()
-class BP_MULTITHREADING_API UScopedMutexLock : public UBlueprintAsyncActionBase
+class BP_MULTITHREADING_API UScopedMutexLockNode : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
@@ -102,8 +157,8 @@ public:
 	
 	virtual void Activate() override;
 
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
-	static UScopedMutexLock* RunLogicWithLockedMutex(UObject* WorldContextObject, FName NewMutexIdentifier, EMutexType NewMutexToUse);
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Multi-Threading | Latent")
+	static UScopedMutexLockNode* RunLogicWithLockedMutex(UObject* WorldContextObject, FName NewMutexIdentifier, EMutexType NewMutexToUse);
 
 	
 private:
@@ -112,7 +167,7 @@ private:
 };
 
 UCLASS()
-class BP_MULTITHREADING_API UAsyncGameThread : public UBlueprintAsyncActionBase
+class BP_MULTITHREADING_API UGameThreadTaskNode : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
@@ -123,8 +178,29 @@ public:
 	
 	virtual void Activate() override;
 
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Threaded")
-	static UAsyncGameThread* RunTask_OnGameThread_Latent(const UObject* WorldContextObject);
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Multi-Threading | Latent")
+	static UGameThreadTaskNode* RunTask_OnGameThread_Latent(UObject* WorldContextObject);
+
+	
+private:
+	UPROPERTY()
+	UObject* WorldContextObject;
+};
+
+UCLASS()
+class BP_MULTITHREADING_API UBackgroundTaskNode : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	
+	UPROPERTY(BlueprintAssignable)
+	FThreadLogic OnBackgroundThread;
+	
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"), Category = "Multi-Threading | Latent")
+	static UBackgroundTaskNode* RunTask_OnBackgroundThread_Latent(UObject* WorldContextObject);
 
 	
 private:

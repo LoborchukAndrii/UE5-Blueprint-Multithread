@@ -1,7 +1,7 @@
 // Copyright Andrii Loborchuk. All Rights Reserved. (2024)
 
 
-#include "MultithreadingBlueprintLibrary.h"
+#include "BlueprintLibrary/MultithreadingBlueprintLibrary.h"
 #include "HAL/ThreadManager.h"
 #include "Async/Async.h"
 #include "GameFramework/Actor.h"
@@ -15,19 +15,25 @@ void UMultithreadingBlueprintLibrary::SleepThread(float SleepTime)
 	FPlatformProcess::Sleep(SleepTime);
 }
 
-void UMultithreadingBlueprintLibrary::GetThread()
+void UMultithreadingBlueprintLibrary::LogThreadName()
 {
 	uint32 ThreadId = FPlatformTLS::GetCurrentThreadId();
 	FString ThreadName = FThreadManager::Get().GetThreadName(ThreadId);
 	UE_LOG(LogThread, Warning, TEXT("%s"), *ThreadName)
 }
 
-void UMultithreadingBlueprintLibrary::EnableActorMultiThreadTick(AActor* TargetActor)
+void UMultithreadingBlueprintLibrary::EnableActorMultiThreadTick(AActor* TargetActor, bool Enable)
 {
-	TargetActor->PrimaryActorTick.bRunOnAnyThread = true;
+	TargetActor->PrimaryActorTick.bRunOnAnyThread = Enable;
 }
 
-void UMultithreadingBlueprintLibrary::RunTask_OnBackgroundThread(FFunctionThreadLogic BackGroundThreadLogic, FFunctionThreadLogic GameThreadLogic)
+void UMultithreadingBlueprintLibrary::EnableActorComponentMultiThreadTick(UActorComponent* TargetActorComponent,
+	bool Enable)
+{
+	TargetActorComponent->PrimaryComponentTick.bRunOnAnyThread = Enable;
+}
+
+void UMultithreadingBlueprintLibrary::RunTask_OnBackgroundThreadCallback(FFunctionThreadLogic BackGroundThreadLogic, FFunctionThreadLogic GameThreadLogic)
 {
 	AsyncTask(ENamedThreads::AnyThread, [BackGroundThreadLogic, GameThreadLogic]()
 	{
@@ -37,6 +43,14 @@ void UMultithreadingBlueprintLibrary::RunTask_OnBackgroundThread(FFunctionThread
 		{
 			GameThreadLogic.Execute();
 		});
+	});
+}
+
+void UMultithreadingBlueprintLibrary::RunTask_OnBackgroundThread(FFunctionThreadLogic BackGroundThreadLogic)
+{
+	AsyncTask(ENamedThreads::AnyThread, [BackGroundThreadLogic]()
+	{
+		BackGroundThreadLogic.Execute();
 	});
 }
 
@@ -78,7 +92,7 @@ void UMultithreadingBlueprintLibrary::Run_ParallelFor(FParallelForLogic Parallel
 	}, ParallelFlag);
 }
 
-void UAsyncThread::Activate()
+void UBackgroundTaskCallbackNode::Activate()
 {
 	Super::Activate();
 
@@ -94,14 +108,14 @@ void UAsyncThread::Activate()
 	});
 }
 
-UAsyncThread* UAsyncThread::RunTask_OnBackgroundThread_Latent(const UObject* WorldContextObject)
+UBackgroundTaskCallbackNode* UBackgroundTaskCallbackNode::RunTask_OnBackgroundThreadCallback_Latent(UObject* WorldContextObject)
 {
-	UAsyncThread* BlueprintNode = NewObject<UAsyncThread>();
-	BlueprintNode->WorldContextObject = const_cast<UObject*>(WorldContextObject);
+	UBackgroundTaskCallbackNode* BlueprintNode = NewObject<UBackgroundTaskCallbackNode>();
+	BlueprintNode->WorldContextObject = WorldContextObject;
 	return BlueprintNode;
 }
 
-void UScopedMutexLock::Activate()
+void UScopedMutexLockNode::Activate()
 {
 	Super::Activate();
 
@@ -135,16 +149,16 @@ void UScopedMutexLock::Activate()
 	}
 }
 
-UScopedMutexLock* UScopedMutexLock::RunLogicWithLockedMutex(UObject* WorldContextObject, FName NewMutexIdentifier, EMutexType NewMutexToUse)
+UScopedMutexLockNode* UScopedMutexLockNode::RunLogicWithLockedMutex(UObject* WorldContextObject, FName NewMutexIdentifier, EMutexType NewMutexToUse)
 {
-	UScopedMutexLock* BlueprintNode = NewObject<UScopedMutexLock>();
+	UScopedMutexLockNode* BlueprintNode = NewObject<UScopedMutexLockNode>();
 	BlueprintNode->WorldContextObject = WorldContextObject;
 	BlueprintNode->MutexIdentifier = NewMutexIdentifier;
 	BlueprintNode->MutexToUse = NewMutexToUse;
 	return BlueprintNode;
 }
 
-void UAsyncGameThread::Activate()
+void UGameThreadTaskNode::Activate()
 {
 	Super::Activate();
 
@@ -155,9 +169,27 @@ void UAsyncGameThread::Activate()
 		});
 }
 
-UAsyncGameThread* UAsyncGameThread::RunTask_OnGameThread_Latent(const UObject* WorldContextObject)
+UGameThreadTaskNode* UGameThreadTaskNode::RunTask_OnGameThread_Latent(UObject* WorldContextObject)
 {
-	UAsyncGameThread* BlueprintNode = NewObject<UAsyncGameThread>();
-	BlueprintNode->WorldContextObject = const_cast<UObject*>(WorldContextObject);
+	UGameThreadTaskNode* BlueprintNode = NewObject<UGameThreadTaskNode>();
+	BlueprintNode->WorldContextObject = WorldContextObject;
+	return BlueprintNode;
+}
+
+void UBackgroundTaskNode::Activate()
+{
+	Super::Activate();
+
+	AsyncTask(ENamedThreads::BackgroundThreadPriority, [this]()
+	{
+		OnBackgroundThread.Broadcast();
+		SetReadyToDestroy();
+	});
+}
+
+UBackgroundTaskNode* UBackgroundTaskNode::RunTask_OnBackgroundThread_Latent(UObject* WorldContextObject)
+{
+	UBackgroundTaskNode* BlueprintNode = NewObject<UBackgroundTaskNode>();
+	BlueprintNode->WorldContextObject = WorldContextObject;
 	return BlueprintNode;
 }

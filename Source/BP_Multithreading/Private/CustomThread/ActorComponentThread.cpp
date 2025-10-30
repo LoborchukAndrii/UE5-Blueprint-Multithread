@@ -1,11 +1,11 @@
 // Copyright Andrii Loborchuk. All Rights Reserved. (2024)
 
 
-#include "ActorComponentThread.h"
+#include "CustomThread/ActorComponentThread.h"
 #include "Windows/WindowsPlatformProcess.h"
 #include "GenericPlatform/GenericPlatformProcess.h"
 #include "HAL/Event.h"
-#include "ThreadedActorComponent.h"
+#include "CustomThread/ThreadedActorComponent.h"
 
 FActorComponentThread::FActorComponentThread(UThreadedActorComponent* AttachedObject) {
 	TickEvent = FGenericPlatformProcess::GetSynchEventFromPool(false);
