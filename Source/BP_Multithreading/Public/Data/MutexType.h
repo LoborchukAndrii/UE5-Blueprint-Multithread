@@ -7,8 +7,8 @@
 UENUM(BlueprintType)
 enum EMutexType
 {
-	CriticalSection,
-	SpinLock
+	CriticalSection UMETA(ToolTip="Puts thread to sleep until mutex unlocked."),
+	SpinLock UMETA(ToolTip="Thread spin in loop until mutex unlocked.")
 };
 
 

@@ -41,18 +41,47 @@ public:
 #pragma endregion
 
 #pragma region Mutex
+	/**
+	 * Thread will wait until mutex unlocked and locked it after get it posibility. Needed manually unlock. 
+	 * 
+	 * @param Identifier - Mutex name.
+	 * @param MutexType - Mutex type (have different behavior of wait).
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Mutex")
 	void LockCriticalSection(FName Identifier, EMutexType MutexType);
 
+	/**
+	 * Function will try to lock mutex, if its successful (needed manually unlock) then it will lock mutex otherwise return false.
+	 * 
+	 * @param Identifier - Mutex name.
+	 * @param MutexType - Mutex type (have different behavior of wait).
+	 * @return Returning is mutes gets locked or not.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Mutex")
 	bool TryLockCriticalSection(FName Identifier, EMutexType MutexType);
 
+	/**
+	 * Unlock mutex.
+	 * 
+	 * @param Identifier - Mutex name.
+	 * @param MutexType - Mutex type (have different behavior of wait).
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Mutex")
 	void UnlockCriticalSection(FName Identifier, EMutexType MutexType);
 
+	/**
+	 * Thread will wait until event triggered.
+	 * 
+	 * @param Identifier - Event name.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Mutex")
 	void WaitTriggerEvent(FName Identifier);
 
+	/**
+	 * Trigger event so another thread can go on.
+	 * 
+	 * @param Identifier - Event name.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Mutex")
 	void TriggerEvent(FName Identifier);
 
