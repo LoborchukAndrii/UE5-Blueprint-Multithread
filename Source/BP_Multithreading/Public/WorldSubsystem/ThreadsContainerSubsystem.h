@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Data/MutexType.h"
+#include "Containers/Queue.h"
 #include "Misc/SpinLock.h"
+#include "HAL/Event.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "ThreadsContainerSubsystem.generated.h"
 
@@ -98,6 +100,6 @@ private:
 	TMap<FName, FEvent*> EventMap;
 	
 	TMap<FName, std::atomic<UProperty*>*> AtomicMap;
-	TMap<FName, TQueue<UProperty*>*> QueueMap;
+	TMap<FName, TQueue<UProperty*, EQueueMode::Mpsc>*> QueueMap;
 };
 

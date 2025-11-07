@@ -2,6 +2,7 @@
 
 
 #include "WorldSubsystem/ThreadsContainerSubsystem.h"
+#include "Engine/World.h"
 #include "UObject/UnrealTypePrivate.h"
 
 bool UThreadsContainerSubsystem::RemoveAtomic(FName Identifier)
@@ -38,7 +39,7 @@ void UThreadsContainerSubsystem::AddQueue(FName Identifier, UProperty* Value)
 			return;
 		}
 
-		TQueue<UProperty*>* NewQueue = new TQueue<UProperty*>();
+		TQueue<UProperty*, EQueueMode::Mpsc>* NewQueue = new TQueue<UProperty*, EQueueMode::Mpsc>();
 		NewQueue->Enqueue(Value);
 
 		QueueMap.Add(Identifier, NewQueue);

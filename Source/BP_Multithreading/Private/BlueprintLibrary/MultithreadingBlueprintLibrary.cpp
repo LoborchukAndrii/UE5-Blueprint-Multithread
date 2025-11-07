@@ -6,6 +6,7 @@
 #include "Async/Async.h"
 #include "GameFramework/Actor.h"
 #include "Async/ParallelFor.h"
+#include "Engine/World.h"
 #include "WorldSubsystem/ThreadsContainerSubsystem.h"
 
 DEFINE_LOG_CATEGORY(LogThread);
